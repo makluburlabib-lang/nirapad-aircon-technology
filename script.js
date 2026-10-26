@@ -1,32 +1,41 @@
-// IMPORTANT: Before publishing, replace the placeholder email below with the real business email.
-const BUSINESS_EMAIL = "REPLACE-WITH-YOUR-BUSINESS-EMAIL@example.com";
+(() => {
+  const year = document.getElementById('year');
+  if (year) year.textContent = new Date().getFullYear();
 
-const menuToggle = document.querySelector(".menu-toggle");
-const navLinks = document.querySelector(".nav-links");
-menuToggle?.addEventListener("click", () => {
-  const isOpen = navLinks.classList.toggle("open");
-  menuToggle.setAttribute("aria-expanded", String(isOpen));
-  menuToggle.setAttribute("aria-label", isOpen ? "Close navigation" : "Open navigation");
-});
-navLinks?.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
-  navLinks.classList.remove("open");
-  menuToggle?.setAttribute("aria-expanded", "false");
-}));
-document.getElementById("year").textContent = new Date().getFullYear();
-
-const form = document.getElementById("enquiry-form");
-form?.addEventListener("submit", event => {
-  event.preventDefault();
-  const note = document.getElementById("form-note");
-  if (BUSINESS_EMAIL.includes("REPLACE-WITH-YOUR-BUSINESS-EMAIL")) {
-    note.textContent = "Demo form only: add your real business email in script.js before using this form.";
-    return;
+  const menuButton = document.querySelector('.menu-toggle');
+  const nav = document.getElementById('nav-links');
+  if (menuButton && nav) {
+    menuButton.addEventListener('click', () => {
+      const isOpen = menuButton.getAttribute('aria-expanded') === 'true';
+      menuButton.setAttribute('aria-expanded', String(!isOpen));
+      menuButton.setAttribute('aria-label', isOpen ? 'Open navigation' : 'Close navigation');
+      nav.classList.toggle('is-open', !isOpen);
+    });
+    nav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+      nav.classList.remove('is-open');
+      menuButton.setAttribute('aria-expanded', 'false');
+      menuButton.setAttribute('aria-label', 'Open navigation');
+    }));
   }
-  const data = new FormData(form);
-  const subject = encodeURIComponent(`Website enquiry: ${data.get("service")}`);
-  const body = encodeURIComponent(
-    `Name: ${data.get("name")}\nContact: ${data.get("contact")}\nService: ${data.get("service")}\nMessage: ${data.get("message") || "(not provided)"}`
-  );
-  window.location.href = `mailto:${BUSINESS_EMAIL}?subject=${subject}&body=${body}`;
-  note.textContent = "Your email app should open with the enquiry prepared. Please send it from there.";
-});
+
+  const form = document.getElementById('enquiry-form');
+  const note = document.getElementById('form-note');
+  if (form) {
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      const data = new FormData(form);
+      const subject = `Service enquiry from ${String(data.get('name')).trim()}`;
+      const body = [
+        'NIRAPAD AIRCONDITION AND TECHNOLOGY — Service Enquiry',
+        '',
+        `Name: ${String(data.get('name')).trim()}`,
+        `Phone or email: ${String(data.get('contact')).trim()}`,
+        `Service needed: ${String(data.get('service')).trim()}`,
+        `Details: ${String(data.get('message') || '').trim() || 'Not provided'}`
+      ].join('\n');
+      if (note) note.textContent = 'Opening your email app. Please review the message and press Send to submit it.';
+      window.location.href = `mailto:nirapadservice18@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    });
+  }
+})();
